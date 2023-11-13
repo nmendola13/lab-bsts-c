@@ -32,13 +32,7 @@ public class SimpleBST<K,V> implements SimpleMap<K,V> {
    * A cached value (useful in some circumstances.
    */
   V cachedValue;
-
-  // +--------------+------------------------------------------------
-  // | Constructors |
-  // +--------------+
-
-  /**
-   * Create a new binary search tree that orders values using the 
+  /* Create a new binary search tree that orders values using the 
    * specified comparator.
    */
   public SimpleBST(Comparator<? super K> comparator) {
@@ -63,22 +57,25 @@ public class SimpleBST<K,V> implements SimpleMap<K,V> {
 
   @Override
   public V set(K key, V value) {
-
-
-    return null;        // STUB
+    root = setHelper(root, key,value);
+    return cachedValue;
   } // set(K,V)
 
-  private BSTNode setHelper(BSTNode root, K key, V value) {
+  private BSTNode <K, V> setHelper(BSTNode<K, V>  root, K key, V value) {
     if(root == null) {
-      return new BSTNode(key, value);
+      this.cachedValue = null;
+      this.size += 1;
+      return new BSTNode<K, V>(key, value);
     } else if(this.comparator.compare(key, root.key) == 0) {
-      return 
-    }
-    
-    else if (this.comparator.compare(key, root.key) < 0) {
+      root.value = this.cachedValue;
+      value = root.value;
+      return root;
+    } else if (this.comparator.compare(key, root.key) < 0) {
       root.left = setHelper(root.left,key, value);
-    } else if (this.comparator.compare(key, root.key) > 0) {
+      return root;
+    } else  {
       root.right = setHelper(root.right, key, value);
+      return root;
     }
   }
 
@@ -151,8 +148,19 @@ public class SimpleBST<K,V> implements SimpleMap<K,V> {
 
   @Override
   public void forEach(BiConsumer<? super K, ? super V> action) {
-    // STUB
+    forEachhelper(this.root, action);
+ 
   } // forEach
+
+  private void forEachhelper(BSTNode<K,V> root, BiConsumer<? super K, ? super V> action) {
+    if(root == null) {
+      return;
+    } else {
+      action.accept(root.key, root.value);
+      forEachhelper(root.left, action);
+      forEachhelper(root.right, action);
+    }
+  }
 
   // +----------------------+----------------------------------------
   // | Other public methods |
@@ -222,7 +230,16 @@ public class SimpleBST<K,V> implements SimpleMap<K,V> {
       @Override
       public BSTNode<K,V> next() {
         checkInit();
-        // TODO Auto-generated method stub
+
+          if (lo){
+            this.root =  this.left;
+
+          }
+          else if (this.root.right != null){
+            this.root = this.right;
+          }
+
+         
         return null;
       } // next();
 
